@@ -35,13 +35,30 @@ async function loadData() {
         alumni = await response.json();
         localStorage.setItem('alumni', JSON.stringify(alumni));
     }
+
     events = JSON.parse(localStorage.getItem('events')) || [];
+
+    // ✅ Add sample event if no events exist
+    if (events.length === 0) {
+        events.push({
+            id: 1,
+            title: "Alumni Networking Meetup",
+            date: "2025-09-20",
+            venue: "Auditorium Hall, Campus",
+            description: "Join us for an evening of networking, mentorship, and reconnecting with fellow alumni.",
+            attendees: [],
+            rsvped: false
+        });
+        localStorage.setItem('events', JSON.stringify(events));
+    }
+
     mentorshipRequests = JSON.parse(localStorage.getItem('mentorshipRequests')) || [];
     donations = JSON.parse(localStorage.getItem('donations')) || [];
     pendingVerifications = alumni.filter(a => !a.verified);
 
     renderDashboard();
 }
+
 
 function saveData() {
     localStorage.setItem('alumni', JSON.stringify(alumni));
@@ -278,26 +295,7 @@ function renderEvents() {
     });
 }
 
-document.getElementById('create-event-btn').addEventListener('click', () => {
-    document.getElementById('create-event-modal').classList.remove('hidden');
-});
 
-document.getElementById('create-event-form').addEventListener('submit', e => {
-    e.preventDefault();
-    const newEvent = {
-        id: events.length + 1,
-        title: document.getElementById('event-title').value,
-        date: document.getElementById('event-date').value,
-        venue: document.getElementById('event-venue').value,
-        description: document.getElementById('event-description').value,
-        attendees: [],
-        rsvped: false
-    };
-    events.push(newEvent);
-    saveData();
-    document.getElementById('create-event-modal').classList.add('hidden');
-    showToast('Event created');
-});
 
 function showRSVP(id) {
     const event = events.find(e => e.id === id);
